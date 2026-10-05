@@ -6,7 +6,7 @@ My portfolio brings together my public web, database, OOP and networking project
 
 ## Technologies
 
-HTML and CSS.
+HTML and CSS, with responsive layouts, illustrated project cards and SVG contact icons.
 
 ## Browse projects
 
@@ -15,6 +15,10 @@ HTML and CSS.
 - **Networking:** campus Packet Tracer project, report and video walkthrough.
 
 The SQL and Networking skill cards jump to their project sections. Each section links to its GitHub repository and documentation.
+
+## Contact
+
+You can find my email, GitHub and [WhatsApp](https://wa.me/qr/2PISM4MVCQ3JE1) in the portfolio’s contact section.
 
 ## Run locally
 
