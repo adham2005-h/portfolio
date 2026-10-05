@@ -419,3 +419,34 @@ a:focus-visible { outline: 3px solid var(--primary); outline-offset: 5px; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+
+.project-categories { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: -15px 0 35px; }
+.project-categories a { padding: 10px 18px; border: 1px solid var(--primary); border-radius: var(--radius); color: var(--text); }
+.project-categories a:hover { background: var(--primary); color: #090912; }
+.skill-link { display: block; color: var(--text); }
+.skill-link span { display: block; margin-top: 18px; color: var(--primary); font-size: 14px; }
+.section-label { display: block; color: var(--primary); font-size: 13px; font-weight: bold; letter-spacing: 2px; margin-bottom: 12px; }
+.featured-project { display: grid; grid-template-columns: 2fr 1fr; gap: 35px; max-width: 1100px; margin: auto; padding: 35px; background: var(--bg-card); border: 1px solid #33334a; border-radius: var(--radius); }
+.featured-copy h3 { color: white; font-size: 28px; line-height: 36px; margin-bottom: 18px; }
+.featured-copy p { margin-bottom: 20px; }
+.project-details { padding-left: 22px; color: #b8b8c8; margin-bottom: 25px; }
+.project-details li { margin-bottom: 8px; }
+.project-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
+.project-actions .view-btn { display: inline-block; }
+.document-link { color: var(--primary); }
+.document-link:hover { text-decoration: underline; }
+.project-summary { background: #11111f; padding: 24px; border-radius: var(--radius); align-self: start; }
+.project-summary h4 { color: white; font-size: 18px; margin-bottom: 18px; }
+.project-summary dl div { border-top: 1px solid #33334a; padding: 14px 0; }
+.project-summary dt { color: var(--primary); font-size: 13px; }
+.project-summary dd { color: var(--text); margin-top: 4px; }
+.category-section { border-top: 1px solid #252539; }
+@media (max-width: 800px) {
+  .featured-project { grid-template-columns: 1fr; }
+}
+@media (max-width: 600px) {
+  .featured-project { padding: 24px 20px; gap: 24px; }
+  section { scroll-margin-top: 155px; }
+  .hero { padding-top: 180px; }
+}
