@@ -397,3 +397,25 @@ p {
     transform: translateY(0px);
   }
 }
+section { scroll-margin-top: 100px; }
+.project-info p { min-height: 80px; margin-bottom: 24px; }
+.project-info .view-btn { display: inline-block; }
+a:focus-visible { outline: 3px solid var(--primary); outline-offset: 5px; }
+.skip-link { position: fixed; top: -60px; left: 20px; padding: 12px; background: white; color: #0f0f1a; z-index: 2000; }
+.skip-link:focus { top: 10px; }
+@media (max-width: 600px) {
+  .navbar { padding: 15px 20px; }
+  .nav-menu { gap: 12px; }
+  .hero { padding: 170px 20px 50px; }
+  .hero-text { flex-basis: 100%; min-width: 0; }
+  .hero-text h1 { font-size: 38px; line-height: 46px; overflow-wrap: anywhere; }
+  .hero-text h2 { font-size: 24px; }
+  .skills-section, .projects-section, .contact-section { padding: 50px 20px; }
+  .skills-container { grid-template-columns: 1fr; }
+  .project-card { width: 100%; }
+  section { scroll-margin-top: 140px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
