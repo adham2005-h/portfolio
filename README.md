@@ -1,31 +1,21 @@
-# Personal Portfolio
+# Adham Hashem — Personal Portfolio
 
-My portfolio brings together my public web, database, OOP and networking projects, with a summary of the skills I have practiced.
+A responsive portfolio presenting my Java and Python projects, supporting web, SQL and networking work, and practical AutoCAD 2D drafting experience.
 
-[Visit my portfolio](https://adhammr223-cyber.github.io/-Assignment-6-Adham-Muayad-Hashem_1320231720/)
+[Visit my portfolio](https://adham2005-h.github.io/-Assignment-6-Adham-Muayad-Hashem_1320231720/)
 
-## Technologies
+## Design
 
-HTML and CSS, with responsive layouts, illustrated project cards and SVG contact icons.
+Custom HTML, CSS and SVG icons, with a navy and teal visual theme, project cards and my current GitHub profile photo.
 
-## Browse projects
+## Projects
 
-- **Web & OOP:** Java, Python, PHP and JavaScript projects.
-- **SQL:** library database, query examples and EER diagram.
-- **Networking:** campus Packet Tracer project, report and video walkthrough.
-
-The SQL and Networking skill cards jump to their project sections. Each section links to its GitHub repository and documentation.
-
-## Contact
-
-You can find my email, GitHub and [WhatsApp](https://wa.me/qr/2PISM4MVCQ3JE1) in the portfolio’s contact section.
+Each project links to its GitHub repository. The SQL and networking sections also include supporting documentation.
 
 ## Run locally
 
-1. Download or clone the repository.
-2. Open `index.html` in a browser.
-3. Keep the existing images and stylesheet in place.
+Open `index.html` in a browser alongside `portfolio.css`.
 
 ## Author
 
-Adham Muayad Hashem
+[Adham Muayad Hashem](https://github.com/adham2005-h)
