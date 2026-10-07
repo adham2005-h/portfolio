@@ -151,3 +151,46 @@ a:focus-visible { outline: 3px solid var(--primary); outline-offset: 6px; }
   html { scroll-behavior: auto; }
   *,*::before,*::after { transition: none !important; }
 }
+
+/* Consistent vector icon system */
+.skill-icon svg{width:28px;height:28px;color:var(--primary)}
+.art-emoji{transform:none;display:flex;color:#a7f3ec;filter:none}
+.art-emoji svg{width:76px;height:76px;stroke-width:1.25}
+.feature-icon svg{width:42px;height:42px;color:var(--primary)}
+
+/* Portfolio visual refresh */
+:root{--bg-dark:#080f18;--bg-card:#101e2c;--text:#f0f6fa;--muted:#9caebd;--line:#243748;--primary:#69e5ce;--accent:#9daff5}
+body{background:radial-gradient(ellipse at 80% 5%,#15354855,transparent 30%),#080f18}
+.navbar{background:#080f18ed;padding:18px 6%;backdrop-filter:blur(20px)}
+.hero{max-width:1400px;min-height:760px;gap:70px;padding-top:70px;position:relative;background:none}
+.hero-text h1{font-size:clamp(58px,7.2vw,104px);letter-spacing:-5px;line-height:.96}
+.name-accent{color:var(--primary)}
+.hero-text h2{font-size:19px;color:#c6d3e2;max-width:450px}
+.hero-text p{font-size:15px;max-width:580px}
+.availability{display:flex;align-items:center;gap:9px;color:var(--muted);font-size:12px;margin-bottom:32px}
+.availability span{width:6px;height:6px;background:var(--primary);border-radius:50%;box-shadow:0 0 14px #69e5ce}
+.hero-tags span{background:#132533;border-color:#284454;color:#a5d3cf}
+.hero-proof{display:flex;flex-wrap:wrap;gap:26px;margin-top:40px;padding-top:25px;border-top:1px solid var(--line)}
+.hero-proof div{display:flex;flex-direction:column}.hero-proof strong{font-size:15px;color:#d3e5ec}.hero-proof span{font-size:10px;color:var(--muted);margin-top:4px}
+.portrait-frame{transform:none;border-radius:160px 160px 28px 28px;padding:24px;background:linear-gradient(150deg,#234554,#101c2d);border-color:#3b626f;box-shadow:0 30px 100px #0008,0 0 60px #69e5ce0c}
+.portrait-label{text-align:center;margin:22px 0 20px;font-size:9px}
+.portrait-frame img{border-radius:130px 130px 18px 18px;filter:none;aspect-ratio:1/1.13;object-fit:cover;object-position:center}
+.portrait-caption{flex-direction:row;justify-content:space-between;align-items:center;gap:10px}
+.floating-note{left:-20px;bottom:20px;background:#10212e;border-color:#325664}
+.section-title h2{letter-spacing:-1.5px;font-size:clamp(32px,4vw,48px)}
+.skills-section,.projects-section,.contact-section{padding-top:100px;padding-bottom:100px}
+#skills,#experience{background:#0c1722}
+.skill-card{background:linear-gradient(145deg,#122333,#0e1b28);border-radius:18px;padding:30px}
+.skill-icon{background:#1a3441;border-color:#315163;color:var(--primary)}
+.project-card{background:#10202e;border-radius:20px}
+.project-art{height:210px}.art-0{background:radial-gradient(circle at 60% 30%,#36625d,#142a35)}.art-1{background:radial-gradient(circle at 60% 30%,#3c436a,#182332)}.art-2{background:radial-gradient(circle at 60% 30%,#4c545e,#192a34)}
+.art-grid{background-size:36px 36px;opacity:.4;transform:perspective(250px) rotateX(20deg) scale(1.3)}
+.art-label{font-size:10px;letter-spacing:2px;left:24px;bottom:20px}
+.art-number{font-size:42px;font-weight:bold;right:20px;color:#ffffff1a}
+.project-info{padding:28px}.project-info h3{font-size:21px}
+.featured-project{background:linear-gradient(140deg,#14313a,#101b2b);padding:42px}
+#networking-projects .featured-project{background:linear-gradient(140deg,#232c44,#102b32)}
+.work-experience{display:grid;grid-template-columns:1fr 1fr;gap:30px;max-width:1160px;margin:0 auto 30px;padding:30px;border:1px solid #345a64;border-radius:18px;background:#142c35}
+.work-experience h3{font-size:26px;margin-bottom:8px}.work-experience p{font-size:14px}.work-experience .section-label{font-size:10px;letter-spacing:1.5px}
+@media(max-width:760px){.hero-text h1{font-size:64px;letter-spacing:-3px}.hero{gap:55px}.work-experience{grid-template-columns:1fr}.portrait-frame{max-width:360px}.hero-proof{gap:20px}}
+@media(max-width:500px){.hero-text h1{font-size:56px}.hero-proof strong{font-size:13px}.hero-proof{gap:16px}.portrait-caption{flex-direction:column;align-items:flex-start}.featured-project{padding:25px}.work-experience{padding:24px}}
