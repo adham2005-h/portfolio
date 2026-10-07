@@ -2,7 +2,7 @@
 
 A responsive portfolio presenting my Java and Python projects, supporting web, SQL and networking work, and practical AutoCAD 2D drafting experience.
 
-[Visit my portfolio](https://adham2005-h.github.io/-Assignment-6-Adham-Muayad-Hashem_1320231720/)
+[Visit my portfolio](https://adham2005-h.github.io/portfolio/)
 
 ## Design
 
