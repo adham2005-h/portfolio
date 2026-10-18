@@ -17,6 +17,7 @@
 
       media.add('(prefers-reduced-motion: no-preference)', () => {
         const entrances = new Map();
+        const blockEntrances = new Map();
         const originalStyles = new Map();
         const originalOwnership = new Map();
         const motionContext = gsap.context(() => {}, document.body);
@@ -49,11 +50,59 @@
         }
 
         function finishFocusedEntrance(event) {
-          entrances.forEach((timeline, element) => {
+          const finish = (timeline, element) => {
             if (element.contains(event.target) && timeline.progress() < 1) {
               timeline.progress(1).pause();
             }
+          };
+          entrances.forEach(finish);
+          blockEntrances.forEach(finish);
+        }
+
+        // Layout offsets stay stable while the visual block moves into place.
+        function layoutTop(element) {
+          let top = 0;
+          for (let node = element; node; node = node.offsetParent) top += node.offsetTop;
+          return top;
+        }
+
+        function enterBlock(element, direction, delay = 0) {
+          if (!element) return;
+          const naturalTop = layoutTop(element);
+          own([element]);
+          element.classList.add('motion-block');
+          element.dataset.enter = direction;
+          const timeline = gsap.timeline({ paused: true }).fromTo(element, {
+            '--entry-progress': 1,
+            '--entry-opacity': 0,
+            '--entry-scale': 0.95
+          }, {
+            '--entry-progress': 0,
+            '--entry-opacity': 1,
+            '--entry-scale': 1,
+            duration: 1.15,
+            delay,
+            ease: 'power2.out'
           });
+          blockEntrances.set(element, timeline);
+          const finish = () => timeline.progress(1).pause();
+          const reset = () => {
+            if (!element.contains(document.activeElement)) timeline.pause(0);
+          };
+          ScrollTrigger.create({
+            trigger: element,
+            start: () => layoutTop(element) - window.innerHeight * 0.88,
+            end: () => layoutTop(element) + element.offsetHeight,
+            onEnter: () => element.contains(document.activeElement) ? finish() : timeline.restart(),
+            onEnterBack: finish,
+            onLeave: finish
+          });
+          ScrollTrigger.create({
+            trigger: element,
+            start: () => layoutTop(element) - window.innerHeight,
+            onLeaveBack: reset
+          });
+          if (naturalTop < window.scrollY + window.innerHeight * 0.88) finish();
         }
 
         function enterOnce(element, timeline, htmlTargets = []) {
@@ -91,6 +140,25 @@
           document.addEventListener('focusin', finishFocusedEntrance);
 
           motionContext.add(() => {
+            selectAll('.section-title').forEach((block, index) => {
+              enterBlock(block, index % 2 ? 'right' : 'left');
+            });
+            selectAll('.skills-container').forEach((grid) => {
+              selectAll('.skill-card', grid).forEach((block, index) => {
+                enterBlock(block, ['left', 'up', 'right'][index % 3], (index % 3) * 0.08);
+              });
+            });
+            selectAll('.project-card').forEach((block, index) => {
+              enterBlock(block, index % 2 ? 'right' : 'left', (index % 2) * 0.09);
+            });
+            selectAll('.featured-project').forEach((block, index) => {
+              enterBlock(block, index % 2 ? 'right' : 'left');
+            });
+            enterBlock(document.querySelector('.work-experience'), 'left');
+            enterBlock(document.querySelector('.education-card'), 'down', 0.12);
+            enterBlock(document.querySelector('.contact-links'), 'up');
+            enterBlock(document.querySelector('.discipline-strip'), 'up');
+
             const hero = document.querySelector('#home');
             if (hero) {
               const opening = own(selectAll('.hero-text .eyebrow, .hero-text .availability', hero));
@@ -125,15 +193,6 @@
               if (icon.length) timeline.fromTo(icon, { y: 50, scale: 0.8, rotation: -10, opacity: 0 }, { y: 0, scale: 1, rotation: 0, opacity: 1, duration: 1 }, 0);
               if (details.length) timeline.fromTo(details, { y: 27, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.075 }, 0.12);
               enterOnce(card, timeline, [...icon, ...details]);
-            });
-
-            selectAll('.skill-card, .work-experience, .education-card, .featured-copy, .contact-links').forEach((group) => {
-              const items = own([...group.children]);
-              if (!items.length) return;
-              const timeline = entranceTimeline().fromTo(items,
-                { y: 25, opacity: 0 },
-                { y: 0, opacity: 1, stagger: 0.075 }, 0);
-              enterOnce(group, timeline, items);
             });
 
             selectAll('.summary-visual').forEach((diagram) => {

@@ -8,7 +8,7 @@ A responsive portfolio presenting my Java and Python projects, supporting web, S
 
 I built the site with HTML, CSS and JavaScript. The design pairs a dark background with soft green accents, a compact portrait and a grid of project cards.
 
-GSAP and ScrollTrigger drive staggered title entrances, layered hero movement, project illustrations and SVG connection drawing as you scroll. The navigation follows the current section, and a progress bar shows your position on the page. On supported devices, the portrait and project cards respond to the pointer.
+GSAP and ScrollTrigger bring whole cards and panels into view from the left, right and bottom, with staggered timing. Scrolling back above a panel prepares its entrance for the next downward pass. Titles, project illustrations and SVG connections have their own supporting animations. The navigation follows the current section, and a progress bar shows your position on the page. On supported devices, the portrait and project cards respond to the pointer.
 
 The layout adapts to phones and tablets. Motion follows the device’s reduced-motion preference, and the content and links remain available without JavaScript. Manrope is loaded from Google Fonts, with a system-font fallback.
 

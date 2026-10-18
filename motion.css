@@ -27,12 +27,32 @@
 .has-advanced-motion .project-card:hover .art-emoji { transform: none; }
 .has-advanced-motion .hero-orbit { transform: none; }
 .has-advanced-motion .project-summary { overflow: hidden; }
+main { overflow-x: clip; }
+
+.motion-block {
+  --entry-progress: 0;
+  --entry-x: 0px;
+  --entry-y: 110px;
+  --entry-scale: 1;
+  --entry-opacity: 1;
+}
+.motion-block[data-enter="left"] { --entry-x: -190px; --entry-y: 45px; }
+.motion-block[data-enter="right"] { --entry-x: 190px; --entry-y: 45px; }
+.motion-block[data-enter="down"] { --entry-x: 0px; --entry-y: -95px; }
+.has-advanced-motion .motion-block[data-motion-owned] {
+  opacity: var(--entry-opacity);
+  transform: translate3d(calc(var(--entry-x) * var(--entry-progress)),calc(var(--entry-y) * var(--entry-progress)),0) scale(var(--entry-scale)) perspective(1100px) rotateX(var(--tilt-x,0deg)) rotateY(var(--tilt-y,0deg));
+}
 
 @media (max-width: 900px) {
   .hero-visual { width: 248px; }
   .portrait-scene { width: 222px; }
 }
 @media (max-width: 650px) {
+  .motion-block { --entry-y: 82px; }
+  .motion-block[data-enter="left"] { --entry-x: -42px; --entry-y: 48px; }
+  .motion-block[data-enter="right"] { --entry-x: 42px; --entry-y: 48px; }
+  .motion-block[data-enter="down"] { --entry-y: -65px; }
   .hero-visual { width: 210px; }
   .portrait-scene { width: 176px; padding: 12px; }
   .portrait-crop { width: 140px; aspect-ratio: 1; border-radius: 12px; }
