@@ -167,7 +167,7 @@
       }
 
       let scrollShift = 0;
-      if (hero && parallax && !reducedMotion.matches && finePointer.matches) {
+      if (hero && parallax && !reducedMotion.matches && finePointer.matches && !root.classList.contains('has-advanced-motion')) {
         const rect = hero.getBoundingClientRect();
         if (rect.bottom > 0 && rect.top < window.innerHeight) {
           scrollShift = Math.min(30, Math.max(-30, (-rect.top / Math.max(1, rect.height)) * 30));
