@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Adham Muayad Hashem, focused on Intelligent Systems and Computer Engineering: web, SQL, OOP and campus networking projects in HTML, CSS, JavaScript, PHP, MySQL, Java, Python and Cisco Packet Tracer.">
   <title>Adham Muayad Hashem | Portfolio</title>
-  <meta name="theme-color" content="#0b1115">
+  <meta name="theme-color" content="#0b1020">
   <link rel="icon" type="image/svg+xml" href="images/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="portfolio.css?v=20261018-studio-2">
-  <link rel="stylesheet" href="motion.css?v=20261018-directional-3">
+  <link rel="stylesheet" href="portfolio.css?v=20261021-midnight">
+  <link rel="stylesheet" href="motion.css?v=20261021-midnight">
   <script src="vendor/gsap/gsap.min.js" defer></script>
   <script src="vendor/gsap/ScrollTrigger.min.js" defer></script>
   <script src="portfolio.js?v=20261018-studio-2" defer></script>
@@ -30,6 +30,7 @@
   </header>
   <main id="main">
     <section class="hero" id="home" aria-labelledby="hero-title">
+      <canvas id="hero-network" aria-hidden="true"></canvas>
       <div class="hero-text reveal">
         <span class="eyebrow"><span class="label-line" aria-hidden="true"></span> ENGINEERING / CODE / DESIGN</span>
         <div class="availability"><span aria-hidden="true"></span> Based in Ras Al Khaimah, UAE</div>
@@ -78,5 +79,51 @@
   </main>
   <footer class="footer"><a class="footer-name" href="#home">Adham Hashem<span>.</span></a><p>Learn. Build. Understand.</p><span class="footer-credit">HTML · CSS · JavaScript</span></footer>
   <a class="back-to-top" href="#home" aria-label="Back to top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20V4m-6 6 6-6 6 6"/></svg></a>
+
+<script>
+(() => {
+ const canvas=document.getElementById('hero-network'), ctx=canvas.getContext('2d');
+ if(!ctx) return;
+ const motion=matchMedia('(prefers-reduced-motion: reduce)'), hero=canvas.parentElement;
+ let width=0,height=0,points=[],frame=0,last=0,visible=true;
+ const pointer={x:-999,y:-999};
+ function resize(){
+  width=canvas.clientWidth; height=canvas.clientHeight;
+  const ratio=Math.min(devicePixelRatio||1,2);
+  canvas.width=Math.round(width*ratio); canvas.height=Math.round(height*ratio);
+  ctx.setTransform(ratio,0,0,ratio,0,0);
+  points=Array.from({length:Math.min(48,Math.floor(width/22))},()=>({x:Math.random()*width,y:Math.random()*height,vx:(Math.random()-.5)*12,vy:(Math.random()-.5)*12}));
+ }
+ function draw(time){
+  frame=0;
+  if(motion.matches||document.hidden||!visible) return;
+  const delta=Math.min((time-last)/1000||0,.04); last=time;
+  ctx.clearRect(0,0,width,height); ctx.fillStyle=ctx.strokeStyle='#a8c5ff';
+  points.forEach((p,i)=>{
+   p.x+=p.vx*delta; p.y+=p.vy*delta;
+   if(p.x<0||p.x>width)p.vx*=-1; if(p.y<0||p.y>height)p.vy*=-1;
+   ctx.globalAlpha=.6; ctx.beginPath(); ctx.arc(p.x,p.y,1.4,0,Math.PI*2); ctx.fill();
+   function connect(q,limit,alpha){
+    const d=Math.hypot(p.x-q.x,p.y-q.y);
+    if(d<limit){ctx.globalAlpha=(1-d/limit)*alpha;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(q.x,q.y);ctx.stroke();}
+   }
+   for(let j=i+1;j<points.length;j++)connect(points[j],125,.22);
+   connect(pointer,165,.38);
+  });
+  frame=requestAnimationFrame(draw);
+ }
+ function sync(){
+  cancelAnimationFrame(frame); frame=0; last=performance.now();
+  if(!motion.matches&&!document.hidden&&visible)frame=requestAnimationFrame(draw);
+  else ctx.clearRect(0,0,width,height);
+ }
+ hero.addEventListener('pointermove',e=>{if(e.pointerType!=='mouse')return;const r=canvas.getBoundingClientRect();pointer.x=e.clientX-r.left;pointer.y=e.clientY-r.top;},{passive:true});
+ hero.addEventListener('pointerleave',()=>{pointer.x=pointer.y=-999;});
+ new ResizeObserver(resize).observe(hero);
+ new IntersectionObserver(es=>{visible=es[0].isIntersecting;sync();}).observe(hero);
+ document.addEventListener('visibilitychange',sync); motion.addEventListener('change',sync);
+ resize();sync();
+})();
+</script>
 </body>
 </html>
