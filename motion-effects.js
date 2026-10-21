@@ -1,263 +1,65 @@
 (() => {
-  function startMotionEffects() {
-    const { gsap, ScrollTrigger } = window;
-    if (!gsap || !ScrollTrigger) return;
-
-    const root = document.documentElement;
-    const completedEntrances = new WeakSet();
-    const selectAll = (selector, scope = document) => [...scope.querySelectorAll(selector)];
-    const showContent = () => selectAll('.reveal').forEach((element) => {
-      element.classList.remove('reveal-ready');
-      element.classList.add('is-visible');
-    });
-
-    try {
-      gsap.registerPlugin(ScrollTrigger);
-      const media = gsap.matchMedia();
-
-      media.add('(prefers-reduced-motion: no-preference)', () => {
-        const entrances = new Map();
-        const blockEntrances = new Map();
-        const originalStyles = new Map();
-        const originalOwnership = new Map();
-        const motionContext = gsap.context(() => {}, document.body);
-        const desktopMedia = gsap.matchMedia();
-
-        function own(elements) {
-          elements.filter(Boolean).forEach((element) => {
-            if (!originalStyles.has(element)) {
-              originalStyles.set(element, element.getAttribute('style'));
-              originalOwnership.set(element, element.getAttribute('data-motion-owned'));
-            }
-            element.setAttribute('data-motion-owned', '');
-          });
-          return elements.filter(Boolean);
-        }
-
-        function restoreContent() {
-          desktopMedia.revert();
-          motionContext.revert();
-          originalStyles.forEach((style, element) => {
-            if (style === null) element.removeAttribute('style');
-            else element.setAttribute('style', style);
-            const ownership = originalOwnership.get(element);
-            if (ownership === null) element.removeAttribute('data-motion-owned');
-            else element.setAttribute('data-motion-owned', ownership);
-          });
-          root.classList.remove('has-advanced-motion');
-          showContent();
-          document.removeEventListener('focusin', finishFocusedEntrance);
-        }
-
-        function finishFocusedEntrance(event) {
-          const finish = (timeline, element) => {
-            if (element.contains(event.target) && timeline.progress() < 1) {
-              timeline.progress(1).pause();
-            }
-          };
-          entrances.forEach(finish);
-          blockEntrances.forEach(finish);
-        }
-
-        // Layout offsets stay stable while the visual block moves into place.
-        function layoutTop(element) {
-          let top = 0;
-          for (let node = element; node; node = node.offsetParent) top += node.offsetTop;
-          return top;
-        }
-
-        function enterBlock(element, direction, delay = 0) {
-          if (!element) return;
-          const naturalTop = layoutTop(element);
-          own([element]);
-          element.classList.add('motion-block');
-          element.dataset.enter = direction;
-          const timeline = gsap.timeline({ paused: true }).fromTo(element, {
-            '--entry-progress': 1,
-            '--entry-opacity': 0,
-            '--entry-scale': 0.95
-          }, {
-            '--entry-progress': 0,
-            '--entry-opacity': 1,
-            '--entry-scale': 1,
-            duration: 1.15,
-            delay,
-            ease: 'power2.out'
-          });
-          blockEntrances.set(element, timeline);
-          const finish = () => timeline.progress(1).pause();
-          const reset = () => {
-            if (!element.contains(document.activeElement)) timeline.pause(0);
-          };
-          ScrollTrigger.create({
-            trigger: element,
-            start: () => layoutTop(element) - window.innerHeight * 0.88,
-            end: () => layoutTop(element) + element.offsetHeight,
-            onEnter: () => element.contains(document.activeElement) ? finish() : timeline.restart(),
-            onEnterBack: finish,
-            onLeave: finish
-          });
-          ScrollTrigger.create({
-            trigger: element,
-            start: () => layoutTop(element) - window.innerHeight,
-            onLeaveBack: reset
-          });
-          if (naturalTop < window.scrollY + window.innerHeight * 0.88) finish();
-        }
-
-        function enterOnce(element, timeline, htmlTargets = []) {
-          if (!element || !timeline.getChildren().length) return;
-          // Restore CSS hover transforms after an HTML entrance has finished.
-          if (htmlTargets.length) timeline.set(htmlTargets, { clearProps: 'transform,opacity' });
-          timeline.eventCallback('onComplete', () => completedEntrances.add(element));
-          entrances.set(element, timeline);
-          const finish = () => timeline.progress(1).pause();
-          const play = () => { if (timeline.progress() < 1) timeline.play(); };
-          const rect = element.getBoundingClientRect();
-
-          if (completedEntrances.has(element) || rect.bottom <= 0) {
-            finish();
-          } else {
-            ScrollTrigger.create({
-              trigger: element,
-              start: 'top 88%',
-              end: 'bottom top',
-              onEnter: play,
-              onEnterBack: play,
-              onLeave: finish
-            });
-            if (rect.top < window.innerHeight * 0.88) play();
-          }
-        }
-
-        function entranceTimeline() {
-          return gsap.timeline({ paused: true, defaults: { duration: 0.75, ease: 'power3.out' } });
-        }
-
-        try {
-          showContent();
-          root.classList.add('has-advanced-motion');
-          document.addEventListener('focusin', finishFocusedEntrance);
-
-          motionContext.add(() => {
-            selectAll('.section-title').forEach((block, index) => {
-              enterBlock(block, index % 2 ? 'right' : 'left');
-            });
-            selectAll('.skills-container').forEach((grid) => {
-              selectAll('.skill-card', grid).forEach((block, index) => {
-                enterBlock(block, ['left', 'up', 'right'][index % 3], (index % 3) * 0.08);
-              });
-            });
-            selectAll('.project-card').forEach((block, index) => {
-              enterBlock(block, index % 2 ? 'right' : 'left', (index % 2) * 0.09);
-            });
-            selectAll('.featured-project').forEach((block, index) => {
-              enterBlock(block, index % 2 ? 'right' : 'left');
-            });
-            enterBlock(document.querySelector('.work-experience'), 'left');
-            enterBlock(document.querySelector('.education-card'), 'down', 0.12);
-            enterBlock(document.querySelector('.contact-links'), 'up');
-            enterBlock(document.querySelector('.discipline-strip'), 'up');
-
-            const hero = document.querySelector('#home');
-            if (hero) {
-              const opening = own(selectAll('.hero-text .eyebrow, .hero-text .availability', hero));
-              const title = own(selectAll('.hero-title-inner', hero));
-              const copy = own(selectAll('.hero-text > h2, .hero-text > p, .hero-tags, .hero-buttons, .hero-proof', hero));
-              const portrait = own(selectAll('.portrait-content', hero));
-              const note = own(selectAll('.hero-note > *', hero));
-              const timeline = entranceTimeline();
-              if (opening.length) timeline.fromTo(opening, { y: 18, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.07 }, 0);
-              if (title.length) timeline.fromTo(title, { yPercent: 110, rotation: 2 }, { yPercent: 0, rotation: 0, duration: 1, stagger: 0.11 }, 0.08);
-              if (copy.length) timeline.fromTo(copy, { y: 25, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.09 }, 0.32);
-              if (portrait.length) timeline.fromTo(portrait, { y: 40, rotation: -4, scale: 0.94, opacity: 0 }, { y: 0, rotation: 0, scale: 1, opacity: 1, duration: 1 }, 0.2);
-              if (note.length) timeline.fromTo(note, { x: 20, opacity: 0 }, { x: 0, opacity: 1, stagger: 0.08 }, 0.55);
-              enterOnce(hero, timeline, [...opening, ...title, ...copy, ...portrait, ...note]);
-            }
-
-            selectAll('.section-title').forEach((heading) => {
-              const words = own(selectAll('.word-inner', heading));
-              const details = own(selectAll('.section-label, p', heading));
-              const rule = own(selectAll('.title-rule', heading));
-              const timeline = entranceTimeline();
-              if (words.length) timeline.fromTo(words, { yPercent: 110, rotation: 3 }, { yPercent: 0, rotation: 0, duration: 0.95, stagger: 0.06 }, 0);
-              if (details.length) timeline.fromTo(details, { y: 20, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.09 }, 0.12);
-              if (rule.length) timeline.fromTo(rule, { scaleX: 0 }, { scaleX: 1, duration: 0.8 }, 0.18);
-              enterOnce(heading, timeline, [...words, ...details, ...rule]);
-            });
-
-            selectAll('.project-card').forEach((card) => {
-              const icon = own(selectAll('.art-emoji', card));
-              const details = own(selectAll('.project-info > *', card));
-              const timeline = entranceTimeline();
-              if (icon.length) timeline.fromTo(icon, { y: 50, scale: 0.8, rotation: -10, opacity: 0 }, { y: 0, scale: 1, rotation: 0, opacity: 1, duration: 1 }, 0);
-              if (details.length) timeline.fromTo(details, { y: 27, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.075 }, 0.12);
-              enterOnce(card, timeline, [...icon, ...details]);
-            });
-
-            selectAll('.summary-visual').forEach((diagram) => {
-              const lines = own(selectAll('.diagram-line', diagram));
-              const nodes = own(selectAll('.diagram-nodes > g, .diagram-tables > rect', diagram));
-              const lengths = new Map(lines.map((line) => [line, Math.max(1, line.getTotalLength())]));
-              const timeline = entranceTimeline();
-              if (lines.length) timeline.fromTo(lines, {
-                strokeDasharray: (_, line) => lengths.get(line),
-                strokeDashoffset: (_, line) => lengths.get(line)
-              }, { strokeDashoffset: 0, duration: 1.4, stagger: 0.065, ease: 'power2.inOut' }, 0.08);
-              if (nodes.length) timeline.fromTo(nodes,
-                { scale: 0.7, opacity: 0, transformOrigin: '50% 50%' },
-                { scale: 1, opacity: 1, stagger: 0.085, duration: 0.65 }, 0);
-              enterOnce(diagram, timeline);
-            });
-          });
-
-          desktopMedia.add('(min-width: 901px) and (hover: hover) and (pointer: fine)', () => {
-            const heroText = document.querySelector('.hero-text');
-            const heroNote = document.querySelector('.hero-note');
-            own([heroText, heroNote]);
-            if (heroText) gsap.to(heroText, {
-              y: -45, ease: 'none',
-              scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: 0.7 }
-            });
-            if (heroNote) gsap.to(heroNote, {
-              y: 35, rotation: -3, ease: 'none',
-              scrollTrigger: { trigger: '#home', start: 'top top', end: 'bottom top', scrub: 0.7 }
-            });
-            selectAll('.project-card').forEach((card, index) => {
-              const icon = card.querySelector('.art-emoji > svg');
-              if (!icon) return;
-              own([icon]);
-              const direction = index % 2 ? 1 : -1;
-              gsap.fromTo(icon, { y: 18, rotation: -7 * direction }, {
-                y: -18, rotation: 7 * direction, ease: 'none',
-                scrollTrigger: { trigger: card, start: 'top bottom', end: 'bottom top', scrub: 0.6 }
-              });
-            });
-          });
-        } catch (error) {
-          restoreContent();
-          console.warn('Enhanced motion could not start. Standard navigation remains available.', error);
-          return;
-        }
-
-        return restoreContent;
-      });
-
-      const pageLoaded = document.readyState === 'complete'
-        ? Promise.resolve()
-        : new Promise((resolve) => window.addEventListener('load', resolve, { once: true }));
-      Promise.allSettled([document.fonts?.ready || Promise.resolve(), pageLoaded])
-        .then(() => ScrollTrigger.refresh());
-    } catch (error) {
-      root.classList.remove('has-advanced-motion');
-      showContent();
-      console.warn('Standard portfolio motion is being used.', error);
-    }
+ function start() {
+  const root=document.documentElement, reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const fine=matchMedia('(hover:hover) and (pointer:fine)');
+  const aurora=document.createElement('div'); aurora.className='reference-aurora'; aurora.setAttribute('aria-hidden','true'); aurora.innerHTML='<i></i><i></i><i></i>'; document.body.prepend(aurora);
+  const glow=document.createElement('div'); glow.className='pointer-glow'; glow.setAttribute('aria-hidden','true'); document.body.prepend(glow);
+  let pointerFrame=0, px=0, py=0;
+  addEventListener('pointermove', e=>{
+   if(reduced.matches||!fine.matches||e.pointerType!=='mouse')return;
+   px=e.clientX;py=e.clientY;
+   if(!pointerFrame)pointerFrame=requestAnimationFrame(()=>{pointerFrame=0;glow.style.left=px+'px';glow.style.top=py+'px';});
+  },{passive:true});
+  document.documentElement.addEventListener('pointerleave',()=>{glow.style.left='-999px';});
+  document.querySelectorAll('.skill-card,.project-card,.featured-project,.work-experience,.education-card').forEach(card=>{
+   card.addEventListener('pointermove',e=>{
+    if(reduced.matches||e.pointerType!=='mouse')return;
+    const r=card.getBoundingClientRect();card.style.setProperty('--pointer-x',e.clientX-r.left+'px');card.style.setProperty('--pointer-y',e.clientY-r.top+'px');
+   },{passive:true});
+  });
+  const portrait=document.querySelector('.portrait-scene');
+  if(portrait) {
+   const chips=document.createElement('div');chips.className='floating-skills';chips.setAttribute('aria-hidden','true');chips.innerHTML='<span>&lt;/&gt; Java</span><span>SQL</span><span>Cisco</span>';portrait.append(chips);
   }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', startMotionEffects, { once: true });
-  } else {
-    startMotionEffects();
+  const strip=document.querySelector('.discipline-strip');
+  if(strip) {
+   const originals=[...strip.children];const track=document.createElement('div');track.className='marquee-track';
+   const group=document.createElement('div');group.className='marquee-group';originals.forEach(el=>group.append(el));
+   const clone=group.cloneNode(true);clone.setAttribute('aria-hidden','true');track.append(group,clone);strip.append(track);
   }
+  const intro=document.querySelector('.hero-intro');
+  const role=document.createElement('p'); role.className='typing-role';
+  role.innerHTML='<span class="sr-only">I build console apps, web interfaces, relational databases and campus networks.</span><span aria-hidden="true">I build <em></em><b class="typing-caret"></b></span>';
+  intro?.before(role);
+  const target=role.querySelector('em'), words=['console apps.','web interfaces.','relational databases.','campus networks.'];
+  let timer=0,word=0,letter=0,deleting=false;
+  function tick(){
+   if(reduced.matches||document.hidden)return;
+   const text=words[word];letter+=deleting?-1:1;target.textContent=text.slice(0,letter);
+   let delay=deleting?35:75;
+   if(!deleting&&letter===text.length){deleting=true;delay=1400;}
+   else if(deleting&&letter===0){deleting=false;word=(word+1)%words.length;delay=300;}
+   timer=setTimeout(tick,delay);
+  }
+  function sync(){
+   clearTimeout(timer);
+   if(reduced.matches){target.textContent=words[0];return;}
+   if(!document.hidden)timer=setTimeout(tick,150);
+  }
+  reduced.addEventListener('change',sync);document.addEventListener('visibilitychange',sync);sync();
+  const year=[...document.querySelectorAll('.hero-proof strong')].find(el=>el.textContent.trim()==='2028');
+  if(year) {
+   let frame=0,finished=false;
+   const finish=()=>{cancelAnimationFrame(frame);year.textContent='2028';finished=true;};
+   const observer=new IntersectionObserver(entries=>{
+    if(!entries[0].isIntersecting||finished)return;observer.disconnect();
+    if(reduced.matches){finish();return;}
+    const start=performance.now();
+    function count(now){const t=Math.min(1,(now-start)/1200);year.textContent=String(Math.round(2028*(1-Math.pow(1-t,3))));if(t<1)frame=requestAnimationFrame(count);else finish();}
+    frame=requestAnimationFrame(count);
+   }); observer.observe(year);
+   reduced.addEventListener('change',()=>{if(reduced.matches)finish();});
+  }
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
