@@ -9,8 +9,8 @@
 .hero-note { margin: 12px auto 0; padding: 12px 16px; max-width: 100%; }
 .hero-note strong { font-size: 10px; }
 .hero-orbit { inset: -33px -4px 5px; }
-.hero-orbit > span { border-color: #b8f1cb1f; }
-.hero-orbit > span:nth-child(2) { border-color: #b8f1cb10; }
+.hero-orbit > span { border-color: #a8c5ff1f; }
+.hero-orbit > span:nth-child(2) { border-color: #a8c5ff10; }
 .hero-orbit i { top: 35%; right: 7px; }
 .visual-coordinate { text-align: center; margin-left: 0; }
 .hero-title-line { display: block; overflow: hidden; padding-bottom: .09em; margin-bottom: -.09em; }
